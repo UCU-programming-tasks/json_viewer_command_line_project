@@ -46,10 +46,11 @@ def prompt_obj(choices: List[str]) -> str:
         colorful_print(f'  {choice}', 'green')
 
     while True:
-        choice = input('Your choice (to select all, press Enter): ')
+        choice = input(
+            'Your choice (to select all, press Enter. To move backwards, put \'<\'): ')
 
-        if choice == '' or choice in choices:
-            break
+        if choice in ('', '<') or choice in choices:
+            return choice
 
         colorful_print('Error! Please make a valid choice.', 'red')
 
@@ -65,10 +66,11 @@ def prompt_list(lst: List[str]) -> str:
     colorful_print(f'[0..{len(lst) - 1}]', 'magenta')
 
     while True:
-        choice = input('Your choice (to select all, press Enter): ')
+        choice = input(
+            'Your choice (to select all, press Enter To move backwards, put \'<\'): ')
 
-        if choice == '':
-            break
+        if choice in ('', '<'):
+            return choice
 
         try:
             choice_idx = int(choice)
@@ -77,11 +79,9 @@ def prompt_list(lst: List[str]) -> str:
             continue
 
         if 0 <= choice_idx < len(lst):
-            break
+            return choice_idx
 
         colorful_print('Error! Index out of range.', 'red')
-
-    return choice_idx
 
 
 def print_data(data: Any):
@@ -101,8 +101,13 @@ def print_data(data: Any):
 
     if choice == '':
         pprint(data)
+    elif choice == '<':
+        return 1
     else:
-        print_data(data[choice])
+        exit_code = print_data(data[choice])
+
+        if exit_code == 1:
+            return print_data(data)
 
     return None
 
@@ -113,3 +118,6 @@ def main(filename: str):
     """
     data = read_json(filename)
     print_data(data)
+
+
+main('kved.json')
